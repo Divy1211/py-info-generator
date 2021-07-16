@@ -3,8 +3,8 @@ import json, regex, sys, os
 # settings, BASE_DIR & OUT_DIR are absolute paths
 IGNORED_DIRS = [".git", ".idea", "venv"]
 IGNORED_FILES = []
-BASE_DIR = ""
-OUT_DIR = ""
+BASE_DIR = "C:/Users/LENOVO PC/My Stuff/AoE/CS/AoE2SP/AoE2ScenarioParser/AoE2ScenarioParser"
+OUT_DIR = "C:/Users/LENOVO PC/My Stuff/AoE/CS/AoE2SP/docs"
 
 
 BASE_DIR = BASE_DIR.replace("/", "\\")
@@ -93,7 +93,8 @@ def generate_file_info(path):
 
             "attrs": {},
             "properties": {},
-            "setters": {}
+            "setters": {},
+            "deleters": {}
         }
 
 
@@ -122,7 +123,8 @@ def generate_file_info(path):
             "@property": "properties",
             "@classmethod": "class_methods",
             "@staticmethod": "static_methods",
-            "setter": "setters"
+            "setter": "setters",
+            "deleter": "deleters"
         }
         for function in regex.finditer(pattern_functions, _class, regex.DOTALL):
             ftype = function_type[function.group(1).split(".")[-1]] if function.group(1) else "methods"
