@@ -1,6 +1,5 @@
 import json, regex, sys, os
 
-
 # settings, BASE_DIR & OUT_DIR are absolute paths
 IGNORED_DIRS = [".git", ".idea", "venv"]
 IGNORED_FILES = []
@@ -59,11 +58,13 @@ def cprint(*args, colour = "white", **kwargs):
         "bright_cyan": "\033[96m",
         "bright_white": "\033[97m",
     }
-    print(_colour[colour], *args, _colour["end"], **kwargs)
+
+    string = _colour[colour]+' '.join(map(str, args))+_colour["end"]
+    print(string, **kwargs)
 
 def generate_file_info(path):
 
-    cprint("🔃 Generating file info for file:", colour="bright_yellow", end="")
+    cprint("🔃 Generating file info for file:", colour="bright_yellow", end=" ")
     cprint(f"{path}", colour="bright_blue", end="")
     sys.stdout.flush()
 
@@ -193,7 +194,7 @@ def generate_file_info(path):
         }
 
 
-    cprint("\r✔ Generated file info for file:", colour="bright_green", end="")
+    cprint("\r✔ Generated file info for file:", colour="bright_green", end=" ")
     cprint(f"{path}", colour="bright_blue")
     return file_info
 
