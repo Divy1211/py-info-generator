@@ -203,13 +203,17 @@ def generate_file_info(path):
 def ignored(name):
     return any(map(lambda x: x in name, IGNORED_DIRS + IGNORED_FILES))
 
-for root, dirs, files in os.walk(BASE_DIR):
-    for file in files:
-        if not ignored(root+"\\"+file) and file.endswith(".py"):
-            inside_dir = root.removeprefix(BASE_DIR).removeprefix("\\")
-            inside_dir = inside_dir.replace("\\", ".")+"." if inside_dir else inside_dir
-
-            file_info = generate_file_info(root+"\\"+file)
-
-            with open(OUT_DIR+"\\"+inside_dir+file+".json", "w") as to_file:
-                json.dump(file_info, to_file, indent=4)
+def main():
+    for root, dirs, files in os.walk(BASE_DIR):
+        for file in files:
+            if not ignored(root+"\\"+file) and file.endswith(".py"):
+                inside_dir = root.removeprefix(BASE_DIR).removeprefix("\\")
+                inside_dir = inside_dir.replace("\\", ".")+"." if inside_dir else inside_dir
+    
+                file_info = generate_file_info(root+"\\"+file)
+    
+                with open(OUT_DIR+"\\"+inside_dir+file+".json", "w") as to_file:
+                    json.dump(file_info, to_file, indent=4)
+                    
+if __name__ == '__main__':
+    main()
