@@ -2,7 +2,7 @@
 This script reads all python files inside a directory (recursively) and generates a JSON data file for each python file. This JSON data file contains detailed information about the different objects declared in the python file like classes, functions, and variables.
 
 # Prerequisites
-1. Have python 3.6 or higher installed. If you do not have python, install it from [here](https://www.python.org/downloads/).
+1. Have **Python 3.9** or higher installed. If you do not have python, install it from [here](https://www.python.org/downloads/).
 
 # How to use
 1. Download the script

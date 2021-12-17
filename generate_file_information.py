@@ -1,11 +1,13 @@
-import json, regex, sys, os
+import json
+import os
+import regex
+import sys
 
 # settings, BASE_DIR & OUT_DIR are absolute paths
 IGNORED_DIRS = [".git", ".idea", "venv"]
 IGNORED_FILES = []
 BASE_DIR = ""
 OUT_DIR = ""
-
 
 BASE_DIR = BASE_DIR.replace("/", "\\")
 OUT_DIR = OUT_DIR.replace("/", "\\")
@@ -38,7 +40,8 @@ pattern_loose_vars = r'(?<=\n)' + pattern_vars + r'\n' + _doc_string
 
 pattern_param_split = r'(?:(?<=\[(?:,|.)*?\]),|(?<=,[^\[\]]*),|(?<!(\[|\]).*),)'
 
-def cprint(*args, colour = "white", **kwargs):
+
+def cprint(*args, colour="white", **kwargs):
     _colour = {
         'end': '\033[0m',
         'black': '\033[30m',
@@ -59,17 +62,17 @@ def cprint(*args, colour = "white", **kwargs):
         "bright_white": "\033[97m",
     }
 
-    string = _colour[colour]+' '.join(map(str, args))+_colour["end"]
+    string = _colour[colour] + ' '.join(map(str, args)) + _colour["end"]
     print(string, **kwargs)
 
-def generate_file_info(path):
 
+def generate_file_info(path):
     cprint("🔃 Generating file info for file:", colour="bright_yellow", end=" ")
     cprint(f"{path}", colour="bright_blue", end="")
     sys.stdout.flush()
 
     file_info = {
-        "filename": path.removeprefix(BASE_DIR+"\\"),
+        "filename": path.removeprefix(BASE_DIR + "\\"),
         "classes": {},
         "functions": {},
         "variables": {}
@@ -97,7 +100,6 @@ def generate_file_info(path):
             "deleters": {}
         }
 
-
         # parse general class info
         class_info = regex.match(pattern_class_info, _class, regex.DOTALL)
         class_desc["name"] = class_info.group(1)
@@ -107,7 +109,6 @@ def generate_file_info(path):
             # class_desc["docstring"] = regex.sub(r'(?<=\n)\s{4}', ' ', class_info.group(3)).strip()
             class_desc["docstring"] = class_info.group(3).strip()
 
-
         # parse info about class attributes
         for class_attr in regex.finditer(pattern_class_attrs, _class, regex.DOTALL):
             class_desc["class_attrs"][class_attr.group(1)] = {
@@ -116,7 +117,6 @@ def generate_file_info(path):
                 "value": class_attr.group(3),
                 "docstring": class_attr.group(4)
             }
-
 
         # parse info about functions
         function_type = {
@@ -148,7 +148,6 @@ def generate_file_info(path):
                 "docstring": function.group(5) if function.group(5) else ""
             }
 
-
         # parse info about class instance attributes
         for attr in regex.finditer(pattern_attrs, _class):
             if attr.group(1) not in class_desc["attrs"]:
@@ -161,7 +160,6 @@ def generate_file_info(path):
 
         file_info["classes"][class_info.group(1)] = class_desc
 
-
     # parse info about variables outside a class in the file
     for var in regex.finditer(pattern_loose_vars, code):
         if var.group(1) not in file_info["variables"]:
@@ -171,7 +169,6 @@ def generate_file_info(path):
                 "value": var.group(3),
                 "docstring": var.group(4)
             }
-
 
     # parse info about functions outside a class in the file
     for function in regex.finditer(pattern_loose_functions, code):
@@ -195,25 +192,27 @@ def generate_file_info(path):
             "docstring": function.group(4) if function.group(4) else ""
         }
 
-
     cprint("\r✔ Generated file info for file:", colour="bright_green", end=" ")
     cprint(f"{path}", colour="bright_blue")
     return file_info
 
+
 def ignored(name):
     return any(map(lambda x: x in name, IGNORED_DIRS + IGNORED_FILES))
+
 
 def main():
     for root, dirs, files in os.walk(BASE_DIR):
         for file in files:
-            if not ignored(root+"\\"+file) and file.endswith(".py"):
+            if not ignored(root + "\\" + file) and file.endswith(".py"):
                 inside_dir = root.removeprefix(BASE_DIR).removeprefix("\\")
-                inside_dir = inside_dir.replace("\\", ".")+"." if inside_dir else inside_dir
-    
-                file_info = generate_file_info(root+"\\"+file)
-    
-                with open(OUT_DIR+"\\"+inside_dir+file+".json", "w") as to_file:
+                inside_dir = inside_dir.replace("\\", ".") + "." if inside_dir else inside_dir
+
+                file_info = generate_file_info(root + "\\" + file)
+
+                with open(OUT_DIR + "\\" + inside_dir + file + ".json", "w") as to_file:
                     json.dump(file_info, to_file, indent=4)
-                    
+
+
 if __name__ == '__main__':
     main()
