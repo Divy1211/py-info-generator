@@ -201,17 +201,11 @@ def ignored(name):
     return any(map(lambda x: x in name, IGNORED_DIRS + IGNORED_FILES))
 
 
-def remove_prefix(string: str, prefix: str) -> str:
-    if string[:len(prefix)] == prefix:
-        return string[len(prefix):]
-    return string
-
-
 def main():
     for root, dirs, files in os.walk(BASE_DIR):
         for file in files:
             if not ignored(root + "\\" + file) and file.endswith(".py"):
-                inside_dir = remove_prefix(remove_prefix(root, BASE_DIR), "\\")
+                inside_dir = root.removeprefix(BASE_DIR).removeprefix("\\")
                 inside_dir = inside_dir.replace("\\", ".") + "." if inside_dir else inside_dir
 
                 file_info = generate_file_info(root + "\\" + file)
